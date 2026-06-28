@@ -1,0 +1,11 @@
+let project = Project(
+    name: "TrussCompiler",
+    version: "0.1.0",
+    targets: [
+        Target(name: "TrussParser"),
+        Target(name: "TrussCompiler")
+    ],
+    products: [
+        Product(name: "truss", type: .Executable, targets: ["TrussParser", "TrussCompiler"])
+    ]
+)

@@ -1,0 +1,77 @@
+public final class Lexer {
+    private var input: CharStream
+    public init(input: CharStream) {
+        self.input = input
+    }
+    public func parse() -> [Token] {
+        var tokens: [Token] = []
+        while !self.input.isEmpty {
+            if let token = self.parse_a_token() {
+                tokens.append(token)
+            }
+        }
+        tokens
+    }
+    private func parse_a_token() -> Token? {
+        self.skipWhitechars()
+        if self.input.isEmpty {
+            return null
+        }
+        let c = self.input.peek
+        if c == '"' {
+            self.parseStringLiteral()
+        } else if c == '\'' {
+            self.parseCharLiteral()
+        } else if c.isAsciiDigit {
+            self.parseNumber()
+        } else if c == '(' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "(", kind: .Separator(.OpenParen), pos: position, id: self.input.id)
+        } else if c == ')' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: ")", kind: .Separator(.CloseParen), pos: position, id: self.input.id)
+        } else if c == '[' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "[", kind: .Separator(.OpenBracket), pos: position, id: self.input.id)
+        } else if c == ']' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "]", kind: .Separator(.CloseBracket), pos: position, id: self.input.id)
+        } else if c == '{' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "{", kind: .Separator(.OpenBrace), pos: position, id: self.input.id)
+        } else if c == '}' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "}", kind: .Separator(.CloseBrace), pos: position, id: self.input.id)
+        } else {
+            panic()
+        }
+    }
+    private func parseStringLiteral() -> Token {
+        panic()
+    }
+    private func skipWhitechars() {
+        if self.input.isEmpty {
+            return
+        }
+        let c = self.input.peek
+        while !self.isEmpty && c.isWhitespace {
+            self.input.pos += 1
+            if c == '\n' {
+                self.input.line += 1
+                self.input.col = 0
+            } else {
+                self.input.col += 1
+            }
+            if self.input.pos >= self.input.count {
+                break
+            }
+            c = self.input.peek()
+        }
+    }
+}

@@ -1,0 +1,106 @@
+public struct SourceId {
+    public let id: UInt64
+}
+
+public struct Position {
+    public let pos: UInt64
+    public let line: UInt64
+    public let col: UInt64
+    public let len: UInt64
+}
+
+public enum KeywordKind {
+    case Func
+    case Let
+    // etc.
+}
+
+public enum SeparatorKind {
+    case OpenParen                  // (
+    case CloseParen                 // )
+    case OpenBracket                // [
+    case CloseBracket               // ]
+    case OpenBrace                  // (
+    case CloseBrace                 // )
+}
+
+public enum TokenKind {
+    case Identifier
+    case Keyword(KeywordKind)
+    case Separator(SeparatorKind)
+}
+
+public class Token {
+    public let value: String
+    public let kind: TokenKind
+    public let pos: Position
+    public let id: SourceId
+    public init(value: String, kind: TokenKind, pos: Position, id: SourceId) {
+        self.value = value
+        self.kind = kind
+        self.pos = pos
+        self.id = id
+    }
+}
+
+public struct CharStream: ~Copyable, Iterator<Char> {
+    private let chars: [Char]
+    public let id: SourceId
+    private var pos: UInt64
+    private var line: UInt64
+    private var col: UInt64
+    public init(content: String, id: SourceId) {
+        self.chars = content.chars
+        self.id = id
+        self.pos = 0
+        self.line = 1
+        self.col = 1
+    }
+    public var isEmpty: Bool {
+        self.pos >= self.chars.count
+    }
+    public var count: UInt64 {
+        chars.count
+    }
+    public var peek: Char? {
+        if pos < chars.count {
+            chars[pos]
+        } else {
+            null
+        }
+    }
+    public var peek2: Char? {
+        if pos + 1 < chars.count {
+            chars[pos + 1]
+        } else {
+            null
+        }
+    }
+    public mutating func next() -> Char? {
+        if pos < chars.count {
+            let c = chars[pos]
+            pos += 1
+            if c == '\n' {
+                line += 1
+                col = 0
+            } else {
+                col += 1
+            }
+            c
+        } else {
+            null
+        }
+    }
+    public var currentPosition: Position {
+        Position(pos: self.pos, line: self.line, col: self.col, len: 1)
+    }
+    public mutating func incrementPosition() {
+        pos += 1
+        if self.peek == '\n' {
+            line += 1
+            col = 0
+        } else {
+            col += 1
+        }
+    }
+}
