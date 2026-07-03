@@ -14,7 +14,7 @@ public final class Lexer {
     }
     private func parse_a_token() -> Token? {
         self.skipWhitechars()
-        guard let c: Char = self.input.peek else {
+        guard let c = self.input.peek else {
             return null
         }
         if c == '"' {
@@ -47,7 +47,7 @@ public final class Lexer {
             let position = self.input.currentPosition
             self.input.incrementPosition()
             Token(value: "}", kind: .Separator(.CloseBrace), pos: position, id: self.input.id)
-        }  else if c == ';' {
+        } else if c == ';' {
             let position = self.input.currentPosition
             self.input.incrementPosition()
             Token(value: ";", kind: .Separator(.SemiColon), pos: position, id: self.input.id)
@@ -81,11 +81,9 @@ public final class Lexer {
         panic()
     }
     private func skipWhitechars() {
+        var c2 = self.input.peek!
         while !self.input.isEmpty {
-            guard let c: Char = self.input.peek else {
-                break
-            }
-            guard c.isWhiteSpace else {
+            guard let c = self.input.peek && c.isWhiteSpace else {
                 break
             }
             self.input.pos += 1
@@ -95,6 +93,7 @@ public final class Lexer {
             } else {
                 self.input.col += 1
             }
+            c2 = self.input.peek!
         }
     }
 }

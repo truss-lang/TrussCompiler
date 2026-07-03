@@ -2,10 +2,12 @@ let project = Project(
     name: "TrussCompiler",
     version: "0.1.0",
     targets: [
-        Target(name: "TrussParser"),
-        Target(name: "TrussCompiler")
+        Target(name: "TrussSyntax"),
+        Target(name: "TrussCompiler", dependencies: ["TrussSyntax",]),
+        Target(name: "TrussPackageManager")
     ],
     products: [
-        Product(name: "truss", type: .Executable, targets: ["TrussParser", "TrussCompiler"])
+        Product(name: "trussc", type: .Executable, targets: ["TrussSyntax", "TrussCompiler"]),
+        Product(name: "truss", type: .Executable, targets: ["TrussPackageManager",])
     ]
 )
