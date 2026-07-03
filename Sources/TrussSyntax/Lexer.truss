@@ -81,10 +81,13 @@ public final class Lexer {
         panic()
     }
     private func skipWhitechars() {
-        guard let c = self.input.peek else {
-            return
-        }
-        while !self.input.isEmpty && c.isWhiteSpace {
+        while !self.input.isEmpty {
+            guard let c = self.input.peek else {
+                break
+            }
+            guard c.isWhiteSpace else {
+                break
+            }
             self.input.pos += 1
             if c == '\n' {
                 self.input.line += 1
@@ -92,10 +95,6 @@ public final class Lexer {
             } else {
                 self.input.col += 1
             }
-            if self.input.pos >= self.input.count {
-                break
-            }
-            c = self.input.peek!
         }
     }
 }
