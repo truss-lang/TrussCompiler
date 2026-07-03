@@ -1,4 +1,6 @@
+import TrussSyntax
+
 #[main]
 func main() {
-    
+    let stmt = TrussSyntax.AST.Return()
 }

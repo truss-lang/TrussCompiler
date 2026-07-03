@@ -1,0 +1,9 @@
+module AST {
+    public abstract class AstNode {
+    }
+    public abstract class Statement: AstNode {
+    }
+    public final class Return: Statement {
+
+    }
+}

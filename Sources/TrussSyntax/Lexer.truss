@@ -14,10 +14,9 @@ public final class Lexer {
     }
     private func parse_a_token() -> Token? {
         self.skipWhitechars()
-        if self.input.isEmpty {
+        guard let c = self.input.peek else {
             return null
         }
-        let c = self.input.peek
         if c == '"' {
             self.parseStringLiteral()
         } else if c == '\'' {
@@ -48,6 +47,26 @@ public final class Lexer {
             let position = self.input.currentPosition
             self.input.incrementPosition()
             Token(value: "}", kind: .Separator(.CloseBrace), pos: position, id: self.input.id)
+        }  else if c == ';' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: ";", kind: .Separator(.SemiColon), pos: position, id: self.input.id)
+        } else if c == ',' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: ",", kind: .Separator(.Comma), pos: position, id: self.input.id)
+        } else if c == '@' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "@", kind: .Separator(.At), pos: position, id: self.input.id)
+        } else if c == '$' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "$", kind: .Operator(.Dollar), pos: position, id: self.input.id)
+        } else if c == '~' {
+            let position = self.input.currentPosition
+            self.input.incrementPosition()
+            Token(value: "~", kind: .Operator(.BitNot), pos: position, id: self.input.id)
         } else {
             panic()
         }
@@ -55,12 +74,17 @@ public final class Lexer {
     private func parseStringLiteral() -> Token {
         panic()
     }
+    private func parseCharLiteral() -> Token {
+        panic()
+    }
+    private func parseNumber() -> Token {
+        panic()
+    }
     private func skipWhitechars() {
-        if self.input.isEmpty {
+        guard let c = self.input.peek else {
             return
         }
-        let c = self.input.peek
-        while !self.isEmpty && c.isWhitespace {
+        while !self.input.isEmpty && c.isWhiteSpace {
             self.input.pos += 1
             if c == '\n' {
                 self.input.line += 1
@@ -71,7 +95,7 @@ public final class Lexer {
             if self.input.pos >= self.input.count {
                 break
             }
-            c = self.input.peek()
+            c = self.input.peek!
         }
     }
 }

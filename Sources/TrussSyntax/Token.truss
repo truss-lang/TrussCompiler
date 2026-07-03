@@ -11,7 +11,9 @@ public struct Position {
 
 public enum KeywordKind {
     case Func
+    case Return
     case Let
+    case Var
     // etc.
 }
 
@@ -22,12 +24,21 @@ public enum SeparatorKind {
     case CloseBracket               // ]
     case OpenBrace                  // (
     case CloseBrace                 // )
+    case SemiColon                  // ;
+    case Comma                      // ,
+    case At                         // @
+}
+
+public enum OperatorKind {
+    case Dollar                     // $
+    case BitNot                     // ~
 }
 
 public enum TokenKind {
     case Identifier
     case Keyword(KeywordKind)
     case Separator(SeparatorKind)
+    case Operator(OperatorKind)
 }
 
 public class Token {
@@ -46,9 +57,9 @@ public class Token {
 public struct CharStream: ~Copyable, Iterator<Char> {
     private let chars: [Char]
     public let id: SourceId
-    private var pos: UInt64
-    private var line: UInt64
-    private var col: UInt64
+    public var pos: UInt64
+    public var line: UInt64
+    public var col: UInt64
     public init(content: String, id: SourceId) {
         self.chars = content.chars
         self.id = id
@@ -96,7 +107,7 @@ public struct CharStream: ~Copyable, Iterator<Char> {
     }
     public mutating func incrementPosition() {
         pos += 1
-        if self.peek == '\n' {
+        if (let peek = self.peek) && peek == '\n' {
             line += 1
             col = 0
         } else {
